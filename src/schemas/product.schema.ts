@@ -20,6 +20,8 @@ export class Product {
   images: string[];
   @Prop({type: [Types.ObjectId], ref: 'Review'})
   reviews: Types.ObjectId[];
+  @Prop({ default: true })
+  isActive: boolean;
 }
 
 const ProductSchema = SchemaFactory.createForClass(Product);
