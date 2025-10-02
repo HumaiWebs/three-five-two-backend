@@ -6,7 +6,7 @@ const models = [{ name: User.name, schema: UserSchema }];
 
 const features = [
   MongooseModule.forRoot(process.env.MONGODB_URI!, {
-    dbName: 'colab',
+    dbName: 'three-five-two',
   }),
   MongooseModule.forFeature(models),
 ];
