@@ -3,6 +3,11 @@ import { HydratedDocument, Types } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
+export enum UserRole {
+  USER = 'admin',
+  ADMIN = 'buyer',
+}
+
 @Schema({ timestamps: true })
 export class User {
   @Prop({ required: true })
@@ -14,8 +19,8 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Workspace' }], default: [] })  // Changed to string ref
-  workspaces: string[];  // Also corrected type to string[] for ObjectIds
+  @Prop({ enum: UserRole, default: UserRole.USER })
+  role: UserRole;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);
