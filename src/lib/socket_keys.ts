@@ -1,0 +1,1 @@
+export const WorkspaceRoomKey = (workspaceId: string) => `workspace_${workspaceId}`;

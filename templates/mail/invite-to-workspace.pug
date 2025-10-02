@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Invite to Workspace
+    style.
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+      .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+      .header { text-align: center; padding-bottom: 20px; }
+      .content { line-height: 1.6; }
+      .button { display: inline-block; padding: 10px 20px; margin: 10px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; }
+      .footer { text-align: center; font-size: 12px; color: #666; padding-top: 20px; }
+  body
+    .container
+      .header
+        h1 You're Invited to Join a Workspace!
+      .content
+        p Hi,
+        p You've been invited to join the "#{workspaceName}" workspace on Co-Lab.
+        p Click the button below to accept the invitation and start collaborating.
+        a.button(href={acceptUrl}) Accept Invitation
+        p If you have any questions, feel free to reply to this email.
+        p The invitation will expire in 7 days.
+      .footer
+        p This email was sent by Co-Lab. © 2023 Co-Lab Inc.
