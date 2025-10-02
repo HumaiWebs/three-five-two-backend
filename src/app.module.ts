@@ -4,12 +4,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './shared/database/database.module';
-import { WorkspaceModule } from './modules/workspace/workspace.module';
 import { MailService } from './shared/mail/mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ActivityModule } from './modules/activity/activity.module';
-import { SocketModule } from './modules/socket/socket.module';
-
 
 @Module({
   imports: [
@@ -27,9 +23,6 @@ import { SocketModule } from './modules/socket/socket.module';
     }),
     AuthModule,
     DatabaseModule,
-    WorkspaceModule,
-    ActivityModule,
-    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailService],

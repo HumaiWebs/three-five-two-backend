@@ -1,6 +1,5 @@
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
-import { ActivityStatus } from 'src/schemas/activity.schema';
 
 export function generateToken(payload: any, secret: string): string {
   const token: string = jwt.sign(payload, secret, { expiresIn: '1d' });
