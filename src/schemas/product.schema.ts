@@ -22,6 +22,12 @@ export class Product {
   reviews: Types.ObjectId[];
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop({ default: false })
+  deleted: boolean;
+
+  @Prop({type:Boolean, default:false})
+  featured: boolean;
 }
 
 const ProductSchema = SchemaFactory.createForClass(Product);

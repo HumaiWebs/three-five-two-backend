@@ -6,10 +6,15 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './shared/database/database.module';
 import { MailService } from './shared/mail/mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ProductModule } from './modules/product/product.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { RedisOptions } from './shared/configs/redis';
+import { CacheService } from './shared/cache/cache.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
+    CacheModule.registerAsync(RedisOptions),
     MailerModule.forRoot({
       transport: {
         host: String(process.env.MAIL_HOST),
@@ -23,8 +28,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
     }),
     AuthModule,
     DatabaseModule,
+    ProductModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MailService],
+  providers: [AppService, MailService, CacheService],
 })
 export class AppModule {}
