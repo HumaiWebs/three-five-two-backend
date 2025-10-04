@@ -10,6 +10,7 @@ import { ProductModule } from './modules/product/product.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from './shared/configs/redis';
 import { CacheService } from './shared/cache/cache.service';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CacheService } from './shared/cache/cache.service';
     AuthModule,
     DatabaseModule,
     ProductModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailService, CacheService],

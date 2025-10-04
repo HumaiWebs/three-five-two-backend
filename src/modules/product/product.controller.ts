@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { CloudinaryService } from 'src/shared/cloudinary/cloudinary.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('product')
