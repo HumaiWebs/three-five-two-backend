@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/createCategory.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -7,7 +8,7 @@ export class CategoryController {
 
   @Post()
   async createCategory(
-    @Body() body: { name: string; description?: string; parent?: string }
+    @Body() body: CreateCategoryDto
   ) {
     return this.categoryService.createCategory(body.name, body.description, body.parent);
   }

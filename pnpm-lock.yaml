@@ -132,6 +132,9 @@ importers:
       '@types/pug':
         specifier: ^2.0.10
         version: 2.0.10
+      '@types/streamifier':
+        specifier: ^0.1.2
+        version: 0.1.2
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -1323,6 +1326,9 @@ packages:
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
+
+  '@types/streamifier@0.1.2':
+    resolution: {integrity: sha512-W53GwxY5Tunz3JUoP1YWDidrAadenSZKOBKMRl6RO3yThOFd03w7yx3HypI8ABGuUCGDHCHUml/5e45FWRt1TQ==}
 
   '@types/superagent@8.1.9':
     resolution: {integrity: sha512-pTVjI73witn+9ILmoJdajHGW2jkSaOzhiFYF1Rd3EQ94kymLqB9PjD9ISg7WaALC7+dCHT0FGe9T2LktLq/3GQ==}
@@ -5797,6 +5803,10 @@ snapshots:
       '@types/send': 0.17.5
 
   '@types/stack-utils@2.0.3': {}
+
+  '@types/streamifier@0.1.2':
+    dependencies:
+      '@types/node': 22.16.0
 
   '@types/superagent@8.1.9':
     dependencies:
