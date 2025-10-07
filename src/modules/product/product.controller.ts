@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   Get,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -24,6 +25,14 @@ export class ProductController {
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     return this.productService.create(dto, files);
+  }
+
+  @Get()
+  async getAllProducts(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.productService.get(page, limit);
   }
 
   @Get('featured')

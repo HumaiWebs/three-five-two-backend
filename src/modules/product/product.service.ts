@@ -53,6 +53,22 @@ export class ProductService {
     }
   }
 
+  async get(page: number, limit: number) {
+    const products = await this.product
+      .find({ deleted: false })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+    const total = await this.product.countDocuments({ deleted: false });
+    return {
+      success: true,
+      products,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    };
+  }
+
   async getFeaturedProducts() {
     const cached = await this.cache.get('featured-products');
     if (cached) {

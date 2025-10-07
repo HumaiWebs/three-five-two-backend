@@ -21,6 +21,11 @@ export class CloudinaryService {
   async uploadImages(
     files: Express.Multer.File[],
   ): Promise<(UploadApiResponse | UploadApiErrorResponse)[]> {
+    console.log(
+      process.env.CLOUDINARY_CLOUD_NAME,
+      process.env.CLOUDINARY_API_KEY,
+      process.env.CLOUDINARY_API_SECRET,
+    );
     const uploadPromises = files.map((file) => this.uploadImage(file));
     const uploadedImages = await Promise.all(uploadPromises);
     return uploadedImages;

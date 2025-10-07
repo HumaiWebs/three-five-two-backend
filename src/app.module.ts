@@ -11,6 +11,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from './shared/configs/redis';
 import { CacheService } from './shared/cache/cache.service';
 import { CategoryModule } from './modules/category/category.module';
+import { CloudinaryProvider } from './shared/cloudinary/cloudinary.provider';
 
 @Module({
   imports: [
@@ -33,6 +34,6 @@ import { CategoryModule } from './modules/category/category.module';
     CategoryModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MailService, CacheService],
+  providers: [AppService, MailService, CacheService, CloudinaryProvider],
 })
 export class AppModule {}
