@@ -1,9 +1,9 @@
 import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import CategorySchema, { Category } from 'src/schemas/category';
+import CategorySchema, { Category } from 'src/schemas/category.schema';
 import OrderSchema, { Order } from 'src/schemas/order.schema';
 import ProductSchema, { Product } from 'src/schemas/product.schema';
-import ReviewSchema, { Review } from 'src/schemas/reviews';
+import ReviewSchema, { Review } from 'src/schemas/reviews.schema';
 import UserSchema, { User } from 'src/schemas/user.schema';
 
 const models = [
