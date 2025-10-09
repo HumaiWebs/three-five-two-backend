@@ -4,6 +4,12 @@ import { Category } from './category';
 
 export type ProductDocument = HydratedDocument<Product>;
 
+export type Image = {
+  url: string;
+  public_id: string;
+  deleted?: boolean;
+};
+
 @Schema({ timestamps: true })
 export class Product {
   @Prop()
@@ -16,9 +22,9 @@ export class Product {
   category: Types.ObjectId;
   @Prop()
   quantity: number;
-  @Prop()
-  images: string[];
-  @Prop({type: [Types.ObjectId], ref: 'Review'})
+  @Prop({ type: Array, default: [] })
+  images: Image[];
+  @Prop({ type: [Types.ObjectId], ref: 'Review' })
   reviews: Types.ObjectId[];
   @Prop({ default: true })
   isActive: boolean;
@@ -26,7 +32,7 @@ export class Product {
   @Prop({ default: false })
   deleted: boolean;
 
-  @Prop({type:Boolean, default:false})
+  @Prop({ type: Boolean, default: false })
   featured: boolean;
 }
 

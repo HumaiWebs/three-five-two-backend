@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Product } from 'src/schemas/product.schema';
+import { Image, Product } from 'src/schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { CloudinaryService } from 'src/shared/cloudinary/cloudinary.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { getProductCacheKey } from 'src/shared/cache/keys';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -25,7 +26,10 @@ export class ProductService {
         public_id: uploadedImage?.['public_id'],
       }));
 
-      const exists = await this.product.findOne({ name: dto.name });
+      const exists = await this.product.findOne({
+        name: dto.name,
+        deleted: false,
+      });
 
       if (exists) {
         return {
@@ -69,6 +73,10 @@ export class ProductService {
     };
   }
 
+  async getProductById(id: string) {
+    return this.product.findById(id).where({ deleted: false });
+  }
+
   async getFeaturedProducts() {
     const cached = await this.cache.get('featured-products');
     if (cached) {
@@ -84,10 +92,14 @@ export class ProductService {
 
   async updateProduct(
     id: string,
-    dto: Partial<CreateProductDto>,
+    dto: UpdateProductDto,
     files: Express.Multer.File[],
   ) {
     try {
+      if (dto.images && dto.images.length > 0) {
+        dto.images = dto.images.filter((img) => !img.deleted);
+      }
+
       if (files && files.length > 0) {
         // handle images
         const uploadedImages = await this.cloudinary.uploadImages(files);
@@ -95,7 +107,7 @@ export class ProductService {
           url: uploadedImage?.['secure_url'],
           public_id: uploadedImage?.['public_id'],
         }));
-        dto.images = imageLinks;
+        dto.images = [...(dto.images || []), ...imageLinks];
       }
 
       const updatedProduct = await this.product.findByIdAndUpdate(id, dto, {
