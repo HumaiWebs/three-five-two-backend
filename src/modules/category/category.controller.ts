@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/createCategory.dto';
 
@@ -14,8 +14,8 @@ export class CategoryController {
   }
 
   @Get()
-  async getAllCategories() {
-    return this.categoryService.getAllCategories();
+  async getAllCategories(@Query('page') page: number = 1, @Query('limit') limit?: number) {
+    return this.categoryService.getAllCategories(page, limit);
   }
 
   @Get(':id')
@@ -23,7 +23,7 @@ export class CategoryController {
     return this.categoryService.getCategoryById(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async updateCategory(
     @Param('id') id: string,
     @Body() body: { name?: string; description?: string; parent?: string }

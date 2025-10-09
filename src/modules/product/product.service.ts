@@ -66,7 +66,7 @@ export class ProductService {
     const total = await this.product.countDocuments({ deleted: false });
     return {
       success: true,
-      products,
+      items:products,
       total,
       page,
       pages: Math.ceil(total / limit),
