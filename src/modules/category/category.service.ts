@@ -7,7 +7,7 @@ import { Category } from 'src/schemas/category.schema';
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private readonly category: Model<Category>,
-  ) {}
+  ) { }
 
   async createCategory(name: string, description?: string, parent?: string) {
     const level = parent
@@ -88,6 +88,19 @@ export class CategoryService {
     } catch (error) {
       console.log(error);
       return { success: false, message: error.message };
+    }
+  }
+
+  async deleteCategory(id: string) {
+    try {
+      // delete all the dependent categories
+      await this.category.deleteMany({ parent: id }).exec();
+      // delete the category
+      await this.category.findByIdAndDelete(id).exec();
+      return { success: true, message: 'Category and its subcategories deleted' }
+    } catch (error) {
+      console.log(error)
+      return { success: false, message: error.message }
     }
   }
 }

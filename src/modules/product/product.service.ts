@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Image, Product } from 'src/schemas/product.schema';
+import { Product } from 'src/schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { CloudinaryService } from 'src/shared/cloudinary/cloudinary.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { getProductCacheKey } from 'src/shared/cache/keys';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
@@ -57,16 +56,27 @@ export class ProductService {
     }
   }
 
-  async get(page: number, limit: number) {
+  async get(page: number, limit: number, query?: string) {
     const products = await this.product
-      .find({ deleted: false })
+      .find({
+        deleted: false,
+        ...(query && query.length > 0
+          ? { name: { $regex: new RegExp(query, 'i') } }
+          : {}),
+      })
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
-    const total = await this.product.countDocuments({ deleted: false });
+
+    const total = await this.product.countDocuments({
+      deleted: false,
+      ...(query ? { name: { $regex: new RegExp(query, 'i') } } : {}),
+    });
+
     return {
       success: true,
-      items:products,
+      items: products,
       total,
       page,
       pages: Math.ceil(total / limit),
@@ -160,5 +170,40 @@ export class ProductService {
       console.log(error);
       return { success: false, message: error.message };
     }
+  }
+
+  async updateFeatureStatus(id: string, featured: boolean) {
+    try {
+      const updatedProduct = await this.product.findByIdAndUpdate(
+        id,
+        { featured },
+        { new: true },
+      );
+      if (!updatedProduct) {
+        return { success: false, message: 'Product not found' };
+      }
+
+      const featuredProducts = await this.product.find({
+        featured: true,
+        deleted: false,
+      });
+      await this.cache.set('featured-products', featuredProducts);
+
+      return { success: true, product: updatedProduct };
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async searchProducts(query: string) {
+    const regex = new RegExp(query, 'i'); // case-insensitive search
+    const products = await this.product
+      .find({
+        name: { $regex: regex },
+        deleted: false,
+      })
+      .limit(10);
+    return { success: true, items: products };
   }
 }

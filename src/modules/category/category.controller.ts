@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/createCategory.dto';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
 
   @Post()
   async createCategory(
@@ -29,5 +29,10 @@ export class CategoryController {
     @Body() body: { name?: string; description?: string; parent?: string }
   ) {
     return this.categoryService.updateCategory(id, body.name, body.description, body.parent);
+  }
+
+  @Delete(':id')
+  async deleteCategory(@Param('id') id: string) {
+    return this.categoryService.deleteCategory(id);
   }
 }

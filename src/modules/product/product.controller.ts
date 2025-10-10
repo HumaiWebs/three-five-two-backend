@@ -20,7 +20,7 @@ import { ParseJsonPipe } from 'src/pipes/parse-json.pipe';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) { }
 
   @UseInterceptors(FilesInterceptor('images'))
   @Post()
@@ -35,8 +35,9 @@ export class ProductController {
   async getAllProducts(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @Query('search') query?: string,
   ) {
-    return this.productService.get(page, limit);
+    return this.productService.get(page, limit,query);
   }
 
   @Get(':id')
@@ -63,5 +64,10 @@ export class ProductController {
   @Delete(':id')
   async deleteProduct(@Param('id') id: string) {
     return this.productService.deleteProduct(id);
+  }
+
+  @Put('featured/:id')
+  async toggleFeatured(@Body() featured: boolean, @Param('id') id: string) {
+    return this.productService.updateFeatureStatus(id, featured);
   }
 }
