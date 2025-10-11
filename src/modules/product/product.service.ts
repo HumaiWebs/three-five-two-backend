@@ -16,7 +16,11 @@ export class ProductService {
     @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
-  async create(dto: CreateProductDto, files: Express.Multer.File[]) {
+  async create(
+    dto: CreateProductDto,
+    files: Express.Multer.File[],
+    ogImage?: Express.Multer.File,
+  ) {
     try {
       // handle images
       const uploadedImages = await this.cloudinary.uploadImages(files);
@@ -24,6 +28,15 @@ export class ProductService {
         url: uploadedImage?.['secure_url'],
         public_id: uploadedImage?.['public_id'],
       }));
+      if (ogImage) {
+        const uploadedOgImage = await this.cloudinary.uploadImage(ogImage);
+        if (uploadedOgImage) {
+          (dto.seo as any) = {
+            ...dto.seo,
+            og: { ...dto.seo?.og, image: uploadedOgImage?.['secure_url'] },
+          };
+        }
+      }
 
       const exists = await this.product.findOne({
         name: dto.name,
@@ -39,6 +52,7 @@ export class ProductService {
       const newProduct = await this.product.create({
         ...dto,
         images: imageLinks,
+        seo: dto.seo || {},
       });
 
       if (newProduct.featured) {
@@ -104,6 +118,7 @@ export class ProductService {
     id: string,
     dto: UpdateProductDto,
     files: Express.Multer.File[],
+    ogImage?: Express.Multer.File,
   ) {
     try {
       if (dto.images && dto.images.length > 0) {
@@ -118,6 +133,16 @@ export class ProductService {
           public_id: uploadedImage?.['public_id'],
         }));
         dto.images = [...(dto.images || []), ...imageLinks];
+      }
+
+      if (ogImage) {
+        const uploadedOgImage = await this.cloudinary.uploadImage(ogImage);
+        if (uploadedOgImage) {
+          (dto.seo as any) = {
+            ...dto.seo,
+            og: { ...dto.seo?.og, image: uploadedOgImage?.['secure_url'] },
+          };
+        }
       }
 
       const updatedProduct = await this.product.findByIdAndUpdate(id, dto, {

@@ -11,6 +11,7 @@ import {
   Query,
   Put,
   UsePipes,
+  UploadedFile,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,15 +21,17 @@ import { ParseJsonPipe } from 'src/pipes/parse-json.pipe';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) { }
+  constructor(private readonly productService: ProductService) {}
 
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FilesInterceptor('images'), FilesInterceptor('ogImage', 1))
   @Post()
+  @UsePipes(new ParseJsonPipe(['seo']))
   async create(
     @Body() dto: CreateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile('ogImage') ogImage: Express.Multer.File,
   ) {
-    return this.productService.create(dto, files);
+    return this.productService.create(dto, files, ogImage);
   }
 
   @Get()
@@ -37,7 +40,7 @@ export class ProductController {
     @Query('limit') limit: number = 10,
     @Query('search') query?: string,
   ) {
-    return this.productService.get(page, limit,query);
+    return this.productService.get(page, limit, query);
   }
 
   @Get(':id')
@@ -50,15 +53,16 @@ export class ProductController {
     return this.productService.getFeaturedProducts();
   }
 
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FilesInterceptor('images'), FilesInterceptor('ogImage', 1))
   @Put(':id')
   @UsePipes(new ParseJsonPipe(['images']))
   async updateProduct(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile('ogImage') ogImage: Express.Multer.File,
   ) {
-    return this.productService.updateProduct(id, dto, files);
+    return this.productService.updateProduct(id, dto, files, ogImage);
   }
 
   @Delete(':id')

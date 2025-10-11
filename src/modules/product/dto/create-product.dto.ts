@@ -15,4 +15,13 @@ export class CreateProductDto {
   images: { url: string; public_id: string }[];
   @ApiProperty({ default: false })
   featured: boolean;
+  @ApiProperty({ required: false })
+  seo?: {
+    name?: string;
+    description?: string;
+    og?: {
+      name?: string;
+      description?: string;
+    };
+  };
 }

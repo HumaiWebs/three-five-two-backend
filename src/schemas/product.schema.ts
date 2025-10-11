@@ -29,6 +29,27 @@ export class Product {
   @Prop({ default: true })
   isActive: boolean;
 
+  @Prop({
+    type: {
+      name: String,
+      descrition: String,
+      og: {
+        name: String,
+        description: String,
+        image: String,
+      },
+    },
+  })
+  seo: {
+    name?: string;
+    description?: string;
+    og?: {
+      name?: string;
+      description?: string;
+      image?: string;
+    };
+  };
+
   @Prop({ default: false })
   deleted: boolean;
 
