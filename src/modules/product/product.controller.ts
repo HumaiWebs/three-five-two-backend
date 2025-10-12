@@ -23,15 +23,14 @@ import { ParseJsonPipe } from 'src/pipes/parse-json.pipe';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @UseInterceptors(FilesInterceptor('images'), FilesInterceptor('ogImage', 1))
+  @UseInterceptors(FilesInterceptor('images'))
   @Post()
   @UsePipes(new ParseJsonPipe(['seo']))
   async create(
     @Body() dto: CreateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
-    @UploadedFile('ogImage') ogImage: Express.Multer.File,
   ) {
-    return this.productService.create(dto, files, ogImage);
+    return this.productService.create(dto, files);
   }
 
   @Get()
@@ -53,16 +52,16 @@ export class ProductController {
     return this.productService.getFeaturedProducts();
   }
 
-  @UseInterceptors(FilesInterceptor('images'), FilesInterceptor('ogImage', 1))
+  @UseInterceptors(FilesInterceptor('images'))
   @Put(':id')
   @UsePipes(new ParseJsonPipe(['images']))
   async updateProduct(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
-    @UploadedFile('ogImage') ogImage: Express.Multer.File,
+    // @UploadedFile('ogImage') ogImage: Express.Multer.File,
   ) {
-    return this.productService.updateProduct(id, dto, files, ogImage);
+    return this.productService.updateProduct(id, dto, files);
   }
 
   @Delete(':id')

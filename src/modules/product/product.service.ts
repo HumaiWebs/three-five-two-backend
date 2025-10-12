@@ -52,7 +52,6 @@ export class ProductService {
       const newProduct = await this.product.create({
         ...dto,
         images: imageLinks,
-        seo: dto.seo || {},
       });
 
       if (newProduct.featured) {

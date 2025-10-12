@@ -32,7 +32,7 @@ export class Product {
   @Prop({
     type: {
       name: String,
-      descrition: String,
+      description: String,
       og: {
         name: String,
         description: String,
