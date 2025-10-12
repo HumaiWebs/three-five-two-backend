@@ -80,6 +80,10 @@ export class ProductService {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
+      .populate({
+        path: 'category',
+        select: 'name _id',
+      })
       .exec();
 
     const total = await this.product.countDocuments({
