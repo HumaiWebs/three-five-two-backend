@@ -4,14 +4,12 @@ import {
   Post,
   UploadedFiles,
   UseInterceptors,
-  Patch,
   Param,
   Delete,
   Get,
   Query,
   Put,
   UsePipes,
-  UploadedFile,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -38,8 +36,14 @@ export class ProductController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('search') query?: string,
+    @Query('featured') featured?: string,
   ) {
-    return this.productService.get(page, limit, query);
+    return this.productService.get({
+      page,
+      limit,
+      query,
+      featured: featured === 'true',
+    });
   }
 
   @Get(':id')

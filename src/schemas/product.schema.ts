@@ -14,6 +14,8 @@ export type Image = {
 export class Product {
   @Prop()
   name: string;
+  @Prop({ unique: true })
+  slug: string;
   @Prop()
   description: string;
   @Prop()
@@ -58,5 +60,17 @@ export class Product {
 }
 
 const ProductSchema = SchemaFactory.createForClass(Product);
+
+ProductSchema.pre('save', function (next) {
+  if (this.isModified('name') || this.isNew) {
+    this.slug = this.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+  next();
+});
 
 export default ProductSchema;

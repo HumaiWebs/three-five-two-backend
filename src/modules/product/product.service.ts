@@ -69,13 +69,24 @@ export class ProductService {
     }
   }
 
-  async get(page: number, limit: number, query?: string) {
+  async get({
+    page,
+    limit,
+    query,
+    featured,
+  }: {
+    page: number;
+    limit: number;
+    query?: string;
+    featured?: boolean;
+  }) {
     const products = await this.product
       .find({
         deleted: false,
         ...(query && query.length > 0
           ? { name: { $regex: new RegExp(query, 'i') } }
           : {}),
+        featured,
       })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
