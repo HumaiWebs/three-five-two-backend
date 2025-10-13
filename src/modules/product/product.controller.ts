@@ -77,4 +77,18 @@ export class ProductController {
   async toggleFeatured(@Body() featured: boolean, @Param('id') id: string) {
     return this.productService.updateFeatureStatus(id, featured);
   }
+
+  @Get('slug/:slug')
+  async getProductBySlug(@Param('slug') slug: string) {
+    return this.productService.bySlug(slug);
+  }
+
+  @Get('simmilar/:id')
+  async getSimmilarProducts(
+    @Param('id') id: string,
+    @Query('category') category: string,
+    @Query('name') name: string,
+  ) {
+    return this.productService.getSimmilarProducts(id, category, name);
+  }
 }

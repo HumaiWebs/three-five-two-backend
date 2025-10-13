@@ -69,6 +69,35 @@ export class ProductService {
     }
   }
 
+  async bySlug(slug: string) {
+    const product = await this.product
+      .findOne({ slug, deleted: false })
+      .populate({
+        path: 'category',
+        select: 'name _id',
+      });
+    return product;
+  }
+
+  async getSimmilarProducts(
+    productId: string,
+    categoryId: string,
+    name: string,
+  ) {
+    console.log('Fetching similar products for:', { productId, categoryId, name });
+    const products = await this.product
+      .find({
+        _id: { $ne: productId },
+        deleted: false,
+        $or: [
+          { category: categoryId },
+          { name: { $regex: new RegExp(name.split(' ')[0], 'i') } },
+        ],
+      })
+      .limit(6);
+    return { success: true, items: products };
+  }
+
   async get({
     page,
     limit,
