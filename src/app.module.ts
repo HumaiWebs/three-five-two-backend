@@ -12,6 +12,7 @@ import { RedisOptions } from './shared/configs/redis';
 import { CacheService } from './shared/cache/cache.service';
 import { CategoryModule } from './modules/category/category.module';
 import { CloudinaryProvider } from './shared/cloudinary/cloudinary.provider';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CloudinaryProvider } from './shared/cloudinary/cloudinary.provider';
     DatabaseModule,
     ProductModule,
     CategoryModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailService, CacheService, CloudinaryProvider],

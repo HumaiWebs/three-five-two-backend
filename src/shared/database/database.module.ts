@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import CartSchema, { Cart } from 'src/schemas/cart.schema';
 import CategorySchema, { Category } from 'src/schemas/category.schema';
 import OrderSchema, { Order } from 'src/schemas/order.schema';
 import ProductSchema, { Product } from 'src/schemas/product.schema';
@@ -23,6 +24,10 @@ const models = [
   {
     name: Review.name,
     schema: ReviewSchema,
+  },
+  {
+    name: Cart.name,
+    schema: CartSchema,
   },
 ];
 
