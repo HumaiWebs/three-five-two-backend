@@ -26,7 +26,7 @@ export class Product {
   quantity: number;
   @Prop({ type: Array, default: [] })
   images: Image[];
-  @Prop({ type: [Types.ObjectId], ref: 'Review' })
+  @Prop({ type: [Types.ObjectId], ref: 'Review',default: [] })
   reviews: Types.ObjectId[];
   @Prop({ default: true })
   isActive: boolean;
@@ -57,6 +57,7 @@ export class Product {
 
   @Prop({ type: Boolean, default: false })
   featured: boolean;
+
 }
 
 const ProductSchema = SchemaFactory.createForClass(Product);

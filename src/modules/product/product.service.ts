@@ -75,6 +75,14 @@ export class ProductService {
       .populate({
         path: 'category',
         select: 'name _id',
+      })
+      .populate({
+        path: 'reviews',
+        model: 'Review',
+        populate: {
+          path: 'user',
+          select: 'name _id',
+        },
       });
     return product;
   }
@@ -84,7 +92,11 @@ export class ProductService {
     categoryId: string,
     name: string,
   ) {
-    console.log('Fetching similar products for:', { productId, categoryId, name });
+    console.log('Fetching similar products for:', {
+      productId,
+      categoryId,
+      name,
+    });
     const products = await this.product
       .find({
         _id: { $ne: productId },
