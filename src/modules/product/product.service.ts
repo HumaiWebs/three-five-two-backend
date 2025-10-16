@@ -121,6 +121,29 @@ export class ProductService {
     query?: string;
     featured?: boolean;
   }) {
+    if (featured) {
+      const cached = await this.cache.get('featured-products');
+      console.log(
+        'getFeaturedProducts: Cache result:',
+        cached ? 'FOUND' : 'NOT FOUND',
+      );
+      console.log(
+        'getFeaturedProducts: Cache keys:',
+        (await this.cache.stores.keys?.()) || 'keys method not available',
+      );
+      console.log('cached', cached);
+      if (cached) {
+        console.log('from cache');
+        return {
+          success: true,
+          items: cached,
+          total: (cached as Product[]).length,
+          page: 1,
+          pages: 1,
+        };
+      }
+    }
+
     const products = await this.product
       .find({
         deleted: false,
@@ -143,6 +166,11 @@ export class ProductService {
       ...(query ? { name: { $regex: new RegExp(query, 'i') } } : {}),
     });
 
+    if (featured && products.length > 0) {
+      await this.cache.set('featured-products', products);
+      // console.log('cache set', await this.cache.get('featured-products'));
+    }
+
     return {
       success: true,
       items: products,
@@ -157,15 +185,42 @@ export class ProductService {
   }
 
   async getFeaturedProducts() {
+    console.log('getFeaturedProducts: Checking cache...');
     const cached = await this.cache.get('featured-products');
+    console.log(
+      'getFeaturedProducts: Cache result:',
+      cached ? 'FOUND' : 'NOT FOUND',
+    );
+    console.log(
+      'getFeaturedProducts: Cache keys:',
+      (await this.cache.stores.keys?.()) || 'keys method not available',
+    );
+
     if (cached) {
+      console.log(
+        'getFeaturedProducts: Returning cached data, count:',
+        (cached as Product[]).length,
+      );
       return { success: true, products: cached };
     }
+
+    console.log('getFeaturedProducts: Fetching from database...');
     const products = await this.product.find({
       featured: true,
       deleted: false,
     });
+
+    console.log('getFeaturedProducts: Found products in DB:', products.length);
     await this.cache.set('featured-products', products);
+    console.log('getFeaturedProducts: Cache set, verifying...');
+
+    // Verify cache was set
+    const verification = await this.cache.get('featured-products');
+    console.log(
+      'getFeaturedProducts: Cache verification:',
+      verification ? 'SUCCESS' : 'FAILED',
+    );
+
     return { success: true, products };
   }
 
