@@ -127,11 +127,6 @@ export class ProductService {
         'getFeaturedProducts: Cache result:',
         cached ? 'FOUND' : 'NOT FOUND',
       );
-      console.log(
-        'getFeaturedProducts: Cache keys:',
-        (await this.cache.stores.keys?.()) || 'keys method not available',
-      );
-      console.log('cached', cached);
       if (cached) {
         console.log('from cache');
         return {
@@ -168,7 +163,6 @@ export class ProductService {
 
     if (featured && products.length > 0) {
       await this.cache.set('featured-products', products);
-      // console.log('cache set', await this.cache.get('featured-products'));
     }
 
     return {
@@ -190,10 +184,6 @@ export class ProductService {
     console.log(
       'getFeaturedProducts: Cache result:',
       cached ? 'FOUND' : 'NOT FOUND',
-    );
-    console.log(
-      'getFeaturedProducts: Cache keys:',
-      (await this.cache.stores.keys?.()) || 'keys method not available',
     );
 
     if (cached) {

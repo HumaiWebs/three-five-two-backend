@@ -16,6 +16,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ParseJsonPipe } from 'src/pipes/parse-json.pipe';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('product')
 export class ProductController {
