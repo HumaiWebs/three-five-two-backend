@@ -8,8 +8,8 @@ export class Cart {
   @Prop()
   userId: string;
 
-  @Prop({ type: [{ productId: String, quantity: Number }] })
-  items: { productId: string; quantity: number }[];
+  @Prop({ type: [{ product: String, quantity: Number }] })
+  items: { product: string; quantity: number }[];
 
 }
 
