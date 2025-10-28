@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Get, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product } from 'src/schemas/product.schema';
@@ -329,6 +329,33 @@ export class ProductService {
         deleted: false,
       })
       .limit(10);
+    return { success: true, items: products };
+  }
+
+  async getShopProducts(filters: Record<string, string | number>) {
+    const query: any = { deleted: false };
+    const page = filters.page ? Number(filters.page) : 1;
+    const limit = filters.limit ? Number(filters.limit) : 20;
+
+    // Apply filters
+    for (const key in filters) {
+      if (filters.hasOwnProperty(key)) {
+        const value = filters[key];
+        if (key === 'minPrice') {
+          query['price'] = { ...query['price'], $gte: Number(value) };
+        } else if (key === 'maxPrice') {
+          query['price'] = { ...query['price'], $lte: Number(value) };
+        } else {
+          query[key] = value;
+        }
+      }
+    }
+
+    const products = await this.product
+      .find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
     return { success: true, items: products };
   }
 }

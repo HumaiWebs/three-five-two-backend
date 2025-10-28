@@ -92,4 +92,9 @@ export class ProductController {
   ) {
     return this.productService.getSimmilarProducts(id, category, name);
   }
+
+  @Get('shop-products')
+  async getShopProducts(@Query() filters: Record<string, string | number>) {
+    return this.productService.getShopProducts(filters);
+  }
 }
