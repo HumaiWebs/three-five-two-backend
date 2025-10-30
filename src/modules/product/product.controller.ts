@@ -38,12 +38,24 @@ export class ProductController {
     @Query('limit') limit: number = 10,
     @Query('search') query?: string,
     @Query('featured') featured?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('category') category?: string,
+    @Query() additionalFilters?: Record<string, any>,
   ) {
+    // Extract known parameters to avoid passing them as additional filters
+    // @ts-ignore
+    const { page: _, limit: __, search, featured: ___, minPrice: ____, maxPrice: _____, category: ______, ...otherFilters } = additionalFilters;
+    
     return this.productService.get({
-      page,
-      limit,
+      page: Number(page),
+      limit: Number(limit),
       query,
       featured: featured === 'true',
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      category,
+      ...otherFilters,
     });
   }
 
@@ -91,10 +103,5 @@ export class ProductController {
     @Query('name') name: string,
   ) {
     return this.productService.getSimmilarProducts(id, category, name);
-  }
-
-  @Get('shop-products')
-  async getShopProducts(@Query() filters: Record<string, string | number>) {
-    return this.productService.getShopProducts(filters);
   }
 }

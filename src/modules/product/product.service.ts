@@ -14,6 +14,7 @@ export class ProductService {
     @InjectModel(Product.name) private readonly product: Model<Product>,
     private readonly cloudinary: CloudinaryService,
     @Inject(CACHE_MANAGER) private cache: Cache,
+    @InjectModel('Category') private readonly categoryModel: Model<any>,
   ) {}
 
   async create(
@@ -111,15 +112,23 @@ export class ProductService {
   }
 
   async get({
-    page,
-    limit,
+    page = 1,
+    limit = 20,
     query,
     featured,
+    minPrice,
+    maxPrice,
+    category,
+    ...additionalFilters
   }: {
-    page: number;
-    limit: number;
+    page?: number;
+    limit?: number;
     query?: string;
     featured?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+    category?: string;
+    [key: string]: any;
   }) {
     if (featured) {
       const cached = await this.cache.get('featured-products');
@@ -139,14 +148,75 @@ export class ProductService {
       }
     }
 
+    const dbQuery: any = { deleted: false };
+
+    // Apply search query
+    if (query && query.length > 0) {
+      dbQuery.name = { $regex: new RegExp(query, 'i') };
+    }
+
+    // Apply featured filter
+    if (featured !== undefined) {
+      dbQuery.featured = featured;
+    }
+
+    // Apply price filters
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      dbQuery.price = {};
+      if (minPrice !== undefined) {
+        dbQuery.price.$gte = Number(minPrice);
+      }
+      if (maxPrice !== undefined) {
+        dbQuery.price.$lte = Number(maxPrice);
+      }
+    }
+
+    // Apply category filter - lookup category by name/slug if needed
+    if (category) {
+      // Handle both single category and array of categories
+      const categories = Array.isArray(category) ? category : [category];
+      const categoryIds: string[] = [];
+
+      for (const cat of categories) {
+        // Check if category is already an ObjectId (24 character hex string)
+        if (/^[0-9a-fA-F]{24}$/.test(cat)) {
+          categoryIds.push(cat as string);
+        } else {
+          // Look up category by slug or name to get the ID
+          const categoryDoc = await this.categoryModel.findOne({
+            $or: [
+              { slug: cat },
+              { name: { $regex: new RegExp(`^${cat}$`, 'i') } },
+            ],
+          });
+          if (categoryDoc) {
+            categoryIds.push(categoryDoc._id.toString());
+          }
+        }
+      }
+
+      if (categoryIds.length > 0) {
+        dbQuery.category =
+          categoryIds.length === 1 ? categoryIds[0] : { $in: categoryIds };
+      }
+    }
+
+    // Apply additional filters
+    for (const key in additionalFilters) {
+      if (
+        additionalFilters.hasOwnProperty(key) &&
+        key !== 'page' &&
+        key !== 'limit'
+      ) {
+        const value = additionalFilters[key];
+        if (value !== undefined && value !== null) {
+          dbQuery[key] = value;
+        }
+      }
+    }
+
     const products = await this.product
-      .find({
-        deleted: false,
-        ...(query && query.length > 0
-          ? { name: { $regex: new RegExp(query, 'i') } }
-          : {}),
-        featured,
-      })
+      .find(dbQuery)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -156,10 +226,7 @@ export class ProductService {
       })
       .exec();
 
-    const total = await this.product.countDocuments({
-      deleted: false,
-      ...(query ? { name: { $regex: new RegExp(query, 'i') } } : {}),
-    });
+    const total = await this.product.countDocuments(dbQuery);
 
     if (featured && products.length > 0) {
       await this.cache.set('featured-products', products);
@@ -329,33 +396,6 @@ export class ProductService {
         deleted: false,
       })
       .limit(10);
-    return { success: true, items: products };
-  }
-
-  async getShopProducts(filters: Record<string, string | number>) {
-    const query: any = { deleted: false };
-    const page = filters.page ? Number(filters.page) : 1;
-    const limit = filters.limit ? Number(filters.limit) : 20;
-
-    // Apply filters
-    for (const key in filters) {
-      if (filters.hasOwnProperty(key)) {
-        const value = filters[key];
-        if (key === 'minPrice') {
-          query['price'] = { ...query['price'], $gte: Number(value) };
-        } else if (key === 'maxPrice') {
-          query['price'] = { ...query['price'], $lte: Number(value) };
-        } else {
-          query[key] = value;
-        }
-      }
-    }
-
-    const products = await this.product
-      .find(query)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .sort({ createdAt: -1 });
     return { success: true, items: products };
   }
 }
